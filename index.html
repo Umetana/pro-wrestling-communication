@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>キショコメ文化研究・学習用プログラム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+        }
+
+        .intensity-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #ef4444;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ef4444;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #ef4444;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .style-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .style-card.active {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .mode-option {
+            @apply flex items-center p-3 border border-slate-700 rounded-lg cursor-pointer transition-all hover:bg-slate-800;
+        }
+        .mode-option input[type="radio"]:checked + span {
+            @apply text-red-500 font-bold;
+        }
+
+        select option {
+            background-color: #1e293b;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen text-slate-200">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="mb-10 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-red-500 mb-2 italic tracking-tighter">キショコメ文化研究プログラム v3.2.2</h1>
+            <p class="text-slate-500 text-[10px] tracking-[0.3em] uppercase">High-Speed Execution & Deep Analysis Tool</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Settings Sidebar -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Category Section -->
+                <section class="glass-card p-6">
+                    <h2 class="text-lg font-bold mb-4 flex items-center text-red-400 uppercase tracking-tight">
+                        <span class="mr-2 italic">Type:</span> カテゴリー
+                    </h2>
+                    <div class="grid grid-cols-1 gap-2" id="style-selector">
+                        <div class="style-card glass-card p-3 active" data-style="resolution">
+                            <div class="font-bold text-sm text-slate-100 italic">【解像度の暴力型】</div>
+                            <div class="text-[10px] text-slate-500">些細な音や変化への異常な観察眼</div>
+                        </div>
+                        <div class="style-card glass-card p-3" data-style="delusion">
+                            <div class="font-bold text-sm text-slate-100 italic">【距離感バグ・偽造記憶型】</div>
+                            <div class="text-[10px] text-slate-500">存在しない過去や、実生活での接点を語る</div>
+                        </div>
+                        <div class="style-card glass-card p-3" data-style="ojisan">
+                            <div class="font-bold text-sm text-slate-100 italic">【粘着質・おじさん構文型】</div>
+                            <div class="text-[10px] text-slate-500">独特の読点、絵文字、独善的な愛</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Subject Settings -->
+                <section class="glass-card p-6">
+                    <h2 class="text-lg font-bold mb-4 flex items-center text-red-400 uppercase tracking-tight">
+                        <span class="mr-2 italic">Target:</span> 属性・性格設定
+                    </h2>
+                    <div class="space-y-4 text-xs">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-slate-500 mb-1 uppercase font-bold">Streamer Side</label>
+                                <select id="streamer-type" class="w-full bg-slate-900 border border-slate-700 rounded p-2 outline-none focus:border-red-500">
+                                    <option value="女性的">女性的</option>
+                                    <option value="男性的">男性的</option>
+                                    <option value="中性的">中性的</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-1 uppercase font-bold">Listener Side</label>
+                                <select id="listener-type" class="w-full bg-slate-900 border border-slate-700 rounded p-2 outline-none focus:border-red-500">
+                                    <option value="男性的">男性的</option>
+                                    <option value="女性的">女性的</option>
+                                    <option value="中性的">中性的</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-slate-500 mb-1 uppercase font-bold">Personality</label>
+                                <select id="streamer-personality" class="w-full bg-slate-900 border border-slate-700 rounded p-2 outline-none focus:border-red-500">
+                                    <option value="指定なし">指定なし</option>
+                                    <option value="毒舌・サバサバ系">毒舌・サバサバ系</option>
+                                    <option value="清楚・天然系">清楚・天然系</option>
+                                    <option value="気が弱い・ビビリ">気が弱い・ビビリ</option>
+                                    <option value="お姉さん・包容力">お姉さん・包容力</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-1 uppercase font-bold">Listener Style</label>
+                                <select id="listener-personality" class="w-full bg-slate-900 border border-slate-700 rounded p-2 outline-none focus:border-red-500">
+                                    <option value="指定なし">指定なし</option>
+                                    <option value="ガチ恋・独占欲">ガチ恋・独占欲</option>
+                                    <option value="後方彼氏面">後方彼氏面</option>
+                                    <option value="限界オタク">限界オタク</option>
+                                    <option value="保護者面・お節介">保護者面・お節介</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Situation Settings -->
+                <section class="glass-card p-6">
+                    <h2 class="text-lg font-bold mb-4 flex items-center text-red-400 uppercase tracking-tight">
+                        <span class="mr-2 italic">Context:</span> 状況・シチュエーション
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-3 gap-1 mb-2 text-[9px]">
+                            <label class="mode-option p-1 flex-col text-center">
+                                <input type="radio" name="sit-mode" value="preset" checked class="accent-red-500">
+                                <span class="mt-1">定番リスト</span>
+                            </label>
+                            <label class="mode-option p-1 flex-col text-center">
+                                <input type="radio" name="sit-mode" value="custom" class="accent-red-500">
+                                <span class="mt-1">自由入力</span>
+                            </label>
+                            <label class="mode-option p-1 flex-col text-center">
+                                <input type="radio" name="sit-mode" value="mix" class="accent-red-500">
+                                <span class="mt-1">定番＋自由</span>
+                            </label>
+                        </div>
+
+                        <div id="preset-ui-container">
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">Select Preset</label>
+                            <select id="preset-situation" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm outline-none focus:border-red-500">
+                                <option value="雑談配信">雑談配信</option>
+                                <option value="歌枠・カラオケ">歌枠・カラオケ</option>
+                                <option value="寝落ちASMR">寝落ちASMR</option>
+                                <option value="ホラーゲーム実況">ホラーゲーム実況</option>
+                                <option value="新衣装お披露目">新衣装お披露目</option>
+                                <option value="料理配信">料理配信</option>
+                            </select>
+                        </div>
+
+                        <div id="custom-ui-container" class="hidden">
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1" id="custom-label">Input Details</label>
+                            <textarea id="custom-situation" placeholder="例：マイクを買い替えたばかり、風邪気味..." 
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm h-20 focus:ring-1 focus:ring-red-500 outline-none resize-none"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium mb-2 flex justify-between items-center text-slate-400">
+                                <span class="uppercase tracking-widest font-bold">キモさの強度 (INTENSITY):</span>
+                                <span id="intensity-val" class="text-red-500 font-bold text-lg font-mono">3</span>
+                            </label>
+                            <input type="range" id="intensity" min="1" max="5" value="3" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer intensity-slider">
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500 mt-1">
+                            <span>微キモ</span>
+                            <span>法的措置</span>
+                        </div>
+
+                        <button id="generate-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-lg transition-all flex items-center justify-center space-x-2 shadow-lg shadow-red-900/40 uppercase tracking-widest">
+                            <span>地獄を生成する</span>
+                            <div id="btn-spinner" class="loading-spinner hidden"></div>
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Result Area -->
+            <div class="lg:col-span-7 flex flex-col gap-6">
+                <div id="output-container" class="flex-grow min-h-[500px]">
+                    <div id="empty-state" class="flex flex-col items-center justify-center h-full text-slate-600 border-2 border-dashed border-slate-800 rounded-xl p-10 text-center">
+                        <p class="text-6xl mb-6 grayscale opacity-30">💀</p>
+                        <p class="text-sm tracking-widest uppercase">Specimen Analysis Room</p>
+                    </div>
+                    <div id="result-display" class="hidden space-y-4 pb-10"></div>
+                </div>
+                <div id="error-box" class="hidden p-4 bg-red-900/30 border border-red-500 text-red-200 rounded-lg text-xs leading-relaxed"></div>
+            </div>
+        </div>
+
+        <!-- System Settings at Bottom -->
+        <section class="mt-12 glass-card p-6 border-slate-800">
+            <h2 class="text-sm font-bold mb-4 flex items-center text-slate-500 uppercase tracking-widest">
+                <span class="mr-2">■</span> System Settings
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div class="space-y-4 text-xs">
+                    <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded-lg border border-slate-800">
+                        <span class="text-slate-400 font-bold uppercase tracking-tighter">Runtime Mode:</span>
+                        <div class="flex gap-4">
+                            <label class="cursor-pointer flex items-center gap-1">
+                                <input type="radio" name="env-mode" value="production" checked class="accent-red-500">
+                                <span class="text-red-400">Production (キー入力)</span>
+                            </label>
+                            <label class="cursor-pointer flex items-center gap-1">
+                                <input type="radio" name="env-mode" value="preview" class="accent-blue-500">
+                                <span class="text-blue-400">Preview (自動)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="api-input-container" class="space-y-2 transition-opacity">
+                        <label class="block text-slate-500 font-bold uppercase tracking-tighter text-[10px]">Gemini API Key</label>
+                        <input type="password" id="api-key-input" placeholder="AIza..." 
+                            class="w-full bg-slate-950 border border-slate-800 rounded p-2 text-xs outline-none focus:border-red-500 text-slate-300">
+                        <div class="flex items-center justify-between mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-slate-200">
+                                <input type="checkbox" id="save-key-checkbox" class="accent-red-500">
+                                <span>APIキーをブラウザに保存する</span>
+                            </label>
+                            <button id="clear-key-btn" class="text-[10px] text-slate-500 hover:text-red-400 transition-colors border border-slate-800 px-2 py-1 rounded">
+                                キーを消去
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[10px] text-slate-500 leading-relaxed border-l border-slate-800 pl-6">
+                    <p class="font-bold text-slate-400 mb-1 uppercase">Notes & Guidelines</p>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>本ツールはジョークツールであり、特定の個人への攻撃を意図したものではありません。</li>
+                        <li>生成されたコメントを実際の配信で使用する際は、配信者との信頼関係（プロレスの合意）を前提としてください。</li>
+                        <li>公序良俗に反する内容や、配信者が真に不快に感じる表現は避けてください。</li>
+                        <li>本ツールの使用により生じたトラブル（出禁、ブロック等）について、当ラボは一切の責任を負いません。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer class="mt-8 text-center text-slate-600 text-[10px] pb-10">
+            <p class="mb-1 text-slate-500 font-bold tracking-widest uppercase italic">Kishokome Culture Research Lab</p>
+        </footer>
+    </div>
+
+    <script>
+        // System Config
+        const STORAGE_KEY = 'kishokome_api_key';
+        const STORAGE_SAVE_FLAG = 'kishokome_save_key';
+        let currentStyle = "resolution";
+
+        // UI Elements
+        const envModeRadios = document.getElementsByName('env-mode');
+        const sitModeRadios = document.getElementsByName('sit-mode');
+        const apiKeyInput = document.getElementById('api-key-input');
+        const saveKeyCheckbox = document.getElementById('save-key-checkbox');
+        const clearKeyBtn = document.getElementById('clear-key-btn');
+
+        const apiInputContainer = document.getElementById('api-input-container');
+        const presetUI = document.getElementById('preset-ui-container');
+        const customUI = document.getElementById('custom-ui-container');
+        const customLabel = document.getElementById('custom-label');
+        const generateBtn = document.getElementById('generate-btn');
+        const intensityInput = document.getElementById('intensity');
+        const intensityVal = document.getElementById('intensity-val');
+        const resultDisplay = document.getElementById('result-display');
+        const emptyState = document.getElementById('empty-state');
+        const btnSpinner = document.getElementById('btn-spinner');
+        const errorBox = document.getElementById('error-box');
+
+        // Initial Settings
+        function initSettings() {
+            const savedKey = localStorage.getItem(STORAGE_KEY);
+            const saveFlag = localStorage.getItem(STORAGE_SAVE_FLAG) === 'true';
+            if (savedKey && saveFlag) {
+                apiKeyInput.value = savedKey;
+                saveKeyCheckbox.checked = true;
+            }
+        }
+
+        // Toggle API UI
+        function updateEnvUI() {
+            const mode = Array.from(envModeRadios).find(r => r.checked).value;
+            if (mode === 'production') {
+                apiInputContainer.classList.remove('opacity-50', 'pointer-events-none');
+            } else {
+                apiInputContainer.classList.add('opacity-50', 'pointer-events-none');
+            }
+        }
+
+        // Situation Mode Switching
+        sitModeRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value === 'preset') {
+                    presetUI.classList.remove('hidden');
+                    customUI.classList.add('hidden');
+                } else if (radio.value === 'custom') {
+                    presetUI.classList.add('hidden');
+                    customUI.classList.remove('hidden');
+                    customLabel.textContent = "Input Details";
+                } else if (radio.value === 'mix') {
+                    presetUI.classList.remove('hidden');
+                    customUI.classList.remove('hidden');
+                    customLabel.textContent = "Custom Details (Add-on)";
+                }
+            });
+        });
+
+        envModeRadios.forEach(r => r.addEventListener('change', updateEnvUI));
+        
+        saveKeyCheckbox.addEventListener('change', () => {
+            if (!saveKeyCheckbox.checked) {
+                localStorage.removeItem(STORAGE_KEY);
+            } else if (apiKeyInput.value) {
+                localStorage.setItem(STORAGE_KEY, apiKeyInput.value);
+            }
+            localStorage.setItem(STORAGE_SAVE_FLAG, saveKeyCheckbox.checked);
+        });
+
+        apiKeyInput.addEventListener('input', () => {
+            if (saveKeyCheckbox.checked) {
+                localStorage.setItem(STORAGE_KEY, apiKeyInput.value);
+            }
+        });
+
+        clearKeyBtn.addEventListener('click', () => {
+            apiKeyInput.value = '';
+            localStorage.removeItem(STORAGE_KEY);
+            saveKeyCheckbox.checked = false;
+            localStorage.setItem(STORAGE_SAVE_FLAG, false);
+            const originalText = clearKeyBtn.textContent;
+            clearKeyBtn.textContent = "Deleted";
+            clearKeyBtn.classList.add('text-red-500');
+            setTimeout(() => {
+                clearKeyBtn.textContent = originalText;
+                clearKeyBtn.classList.remove('text-red-500');
+            }, 2000);
+        });
+
+        document.querySelectorAll('.style-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                currentStyle = card.dataset.style;
+            });
+        });
+
+        intensityInput.addEventListener('input', (e) => intensityVal.textContent = e.target.value);
+
+        async function callGemini(prompt) {
+            const mode = Array.from(envModeRadios).find(r => r.checked).value;
+            let key = (mode === 'production') ? apiKeyInput.value.trim() : "";
+            
+            if (mode === 'production' && !key) throw new Error('APIキーを入力してください。システム設定はページ下部にあります。');
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${key}`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    systemInstruction: {
+                        parts: [{ text: "あなたはVTuber文化における『キショコメ』の高度な構成作家です。ユーザーの指定を厳守し、配信者がプロレス的に反応しやすい『キレのある例文』をJSON形式で生成してください。" }]
+                    },
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                examples: {
+                                    type: "ARRAY",
+                                    items: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            full_comment: { type: "STRING" },
+                                            short_comment: { type: "STRING" },
+                                            point: { type: "STRING" },
+                                            reaction: { type: "STRING" }
+                                        },
+                                        required: ["full_comment", "short_comment", "point", "reaction"]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error?.message || 'APIとの通信に失敗しました。');
+            }
+
+            const data = await response.json();
+            return JSON.parse(data.candidates[0].content.parts[0].text);
+        }
+
+        generateBtn.addEventListener('click', async () => {
+            const sitMode = Array.from(sitModeRadios).find(r => r.checked).value;
+            let sit = "";
+            
+            if (sitMode === 'preset') {
+                sit = document.getElementById('preset-situation').value;
+            } else if (sitMode === 'custom') {
+                sit = document.getElementById('custom-situation').value;
+            } else {
+                sit = `${document.getElementById('preset-situation').value} (具体的な状況: ${document.getElementById('custom-situation').value})`;
+            }
+
+            const intensity = intensityInput.value;
+            const styleName = document.querySelector(`.style-card[data-style="${currentStyle}"] .font-bold`).textContent;
+
+            // 強度の定義をプロンプトに組み込む
+            const intensityDefinition = `
+            【強度の定義 (1-5)】
+            1 (微キモ): まだ「ちょっと熱心なファン」で通じるレベル。
+            3 (中強度): 距離感の詰め方が不自然で、独りよがりな解釈が目立つ。
+            5 (最高強度): 執着心が異常。些細な音や変化への過剰な言及、存在しない過去の捏造、法的に危うい境界線を感じさせる「解像度」や「独占欲」。
+            `;
+
+            const prompt = `
+            カテゴリー: ${styleName}
+            シチュエーション: ${sit}
+            配信者属性: ${document.getElementById('streamer-type').value} / 性格: ${document.getElementById('streamer-personality').value}
+            リスナー属性: ${document.getElementById('listener-type').value} / 性格: ${document.getElementById('listener-personality').value}
+            設定強度: ${intensity}/5
+            
+            ${intensityDefinition}
+
+            指示: 
+            【最重要：設定された強度を正確に反映した例文を3つ生成】
+            1. full_comment: カテゴリーの真髄を詰め込んだ長文。
+            2. short_comment: 1〜3行に収まるYouTubeチャット用。おじさん構文等の場合は文体のアイデンティティを保つこと。
+            3. point: なぜキモいのかの分析。
+            4. reaction: 配信者の想定されるツッコミ。
+            `;
+
+            try {
+                errorBox.classList.add('hidden');
+                btnSpinner.classList.remove('hidden');
+                generateBtn.disabled = true;
+
+                const result = await callGemini(prompt);
+                
+                resultDisplay.innerHTML = result.examples.map((ex, i) => `
+                    <div class="glass-card p-6 border-l-4 border-red-500 animate-in fade-in slide-in-from-bottom-2">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="bg-red-950/40 text-red-500 text-[10px] px-2 py-1 rounded font-bold tracking-widest uppercase">Specimen #${i+1}</span>
+                        </div>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="relative group">
+                                <label class="text-[9px] text-slate-500 uppercase font-bold mb-1 block">Full Analysis (Long)</label>
+                                <p class="text-sm font-bold italic text-slate-300 leading-relaxed bg-slate-900/40 p-3 rounded border border-slate-800 whitespace-pre-wrap">「${ex.full_comment}」</p>
+                                <button onclick="copyText(this, \`${ex.full_comment.replace(/`/g, '\\`')}\`)" class="absolute top-0 right-0 text-[9px] text-slate-600 hover:text-red-400 p-1 uppercase font-bold">Copy</button>
+                            </div>
+                            
+                            <div class="relative group">
+                                <label class="text-[9px] text-red-500 uppercase font-bold mb-1 block">YouTube Ready (Short Strike)</label>
+                                <p class="text-lg font-bold italic text-white leading-relaxed bg-red-950/20 p-3 rounded border border-red-900/30 whitespace-pre-wrap">「${ex.short_comment}」</p>
+                                <button onclick="copyText(this, \`${ex.short_comment.replace(/`/g, '\\`')}\`)" class="absolute top-0 right-0 text-[9px] text-red-400 hover:text-white p-1 uppercase font-bold">Copy</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
+                            <div class="bg-slate-900/60 p-3 rounded border border-slate-800">
+                                <span class="text-red-400 font-bold block mb-1 text-[10px] uppercase">■ Analysis</span>
+                                <span class="text-slate-300">${ex.point}</span>
+                            </div>
+                            <div class="bg-slate-900/60 p-3 rounded border border-slate-800">
+                                <span class="text-blue-400 font-bold block mb-1 text-[10px] uppercase">■ Reaction</span>
+                                <span class="text-slate-300">${ex.reaction}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                emptyState.classList.add('hidden');
+                resultDisplay.classList.remove('hidden');
+            } catch (err) {
+                errorBox.textContent = err.message;
+                errorBox.classList.remove('hidden');
+                errorBox.scrollIntoView({ behavior: 'smooth' });
+            } finally {
+                btnSpinner.classList.add('hidden');
+                generateBtn.disabled = false;
+            }
+        });
+
+        function copyText(btn, text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            const original = btn.textContent;
+            btn.textContent = "Copied!";
+            setTimeout(() => btn.textContent = original, 1500);
+        }
+
+        window.onload = () => {
+            initSettings();
+            updateEnvUI();
+        };
+    </script>
+</body>
+</html>
