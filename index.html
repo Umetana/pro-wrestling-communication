@@ -73,7 +73,7 @@
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
         <header class="mb-10 text-center">
-            <h1 class="text-3xl md:text-4xl font-bold text-red-500 mb-2 italic tracking-tighter">キショコメ文化研究プログラム v3.2.2</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-red-500 mb-2 italic tracking-tighter">キショコメ文化研究プログラム v3.2.3</h1>
             <p class="text-slate-500 text-[10px] tracking-[0.3em] uppercase">High-Speed Execution & Deep Analysis Tool</p>
         </header>
 
@@ -388,7 +388,7 @@
             
             if (mode === 'production' && !key) throw new Error('APIキーを入力してください。システム設定はページ下部にあります。');
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${key}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -540,4 +540,5 @@
         };
     </script>
 </body>
+
 </html>
